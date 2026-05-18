@@ -1,0 +1,29 @@
+[package]
+name = "yolodesktop"
+version = "0.1.0"
+description = "Yolo Training Desktop App"
+authors = ["190084188"]
+edition = "2021"
+
+[lib]
+name = "yolodesktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+rusqlite = { version = "0.31", features = ["bundled"] }
+tokio = { version = "1", features = ["full"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4"] }
+glob = "0.3"
+which = "6"
+regex = "1"
+thiserror = "1"
+dirs-next = "2"
