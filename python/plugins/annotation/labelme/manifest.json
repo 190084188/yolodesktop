@@ -1,0 +1,7 @@
+{
+  "name": "labelme",
+  "version": "5.4.0",
+  "supported_formats": ["labelme_json", "voc", "coco"],
+  "launcher": "launcher.py",
+  "description": "Labelme — polygon and rectangle annotation tool"
+}

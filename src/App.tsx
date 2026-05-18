@@ -1,8 +1,20 @@
 import { useState } from "react";
-import { ConfigProvider, theme, App as AntApp } from "antd";
+import { Routes, Route } from "react-router-dom";
+import { ConfigProvider, theme } from "antd";
+import AppShell from "./components/app-shell";
+import Dashboard from "./routes/dashboard";
+import EnvManager from "./routes/env-manager";
+import DatasetList from "./routes/dataset-list";
+import DatasetDetail from "./routes/dataset-detail";
+import TrainingSetup from "./routes/training-setup";
+import TrainingMonitor from "./routes/training-monitor";
+import ModelViewer from "./routes/model-viewer";
+import ExportManager from "./routes/export-manager";
+import PluginManager from "./routes/plugin-manager";
+import Settings from "./routes/settings";
 
-function App() {
-  const [isDark] = useState(true);
+export default function App() {
+  const [isDark, setIsDark] = useState(true);
 
   return (
     <ConfigProvider
@@ -11,14 +23,20 @@ function App() {
         token: { colorPrimary: "#1677ff" },
       }}
     >
-      <AntApp>
-        <div style={{ padding: 24 }}>
-          <h1>YoloDesktop</h1>
-          <p>Loading...</p>
-        </div>
-      </AntApp>
+      <Routes>
+        <Route element={<AppShell isDark={isDark} onToggleTheme={() => setIsDark(!isDark)} />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/env" element={<EnvManager />} />
+          <Route path="/datasets" element={<DatasetList />} />
+          <Route path="/datasets/:id" element={<DatasetDetail />} />
+          <Route path="/train" element={<TrainingSetup />} />
+          <Route path="/train/:runId" element={<TrainingMonitor />} />
+          <Route path="/models" element={<ModelViewer />} />
+          <Route path="/export" element={<ExportManager />} />
+          <Route path="/plugins" element={<PluginManager />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
+      </Routes>
     </ConfigProvider>
   );
 }
-
-export default App;

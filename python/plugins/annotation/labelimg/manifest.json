@@ -1,0 +1,7 @@
+{
+  "name": "labelimg",
+  "version": "1.8.6",
+  "supported_formats": ["voc", "yolo", "create_ml"],
+  "launcher": "launcher.py",
+  "description": "LabelImg — bounding box annotation tool"
+}
