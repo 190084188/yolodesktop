@@ -25,5 +25,7 @@
   "kaggleAutoDetected": "Kaggle credentials auto-detected",
   "kaggleNotConfigured": "Kaggle credentials not configured",
   "huggingfaceToken": "HuggingFace Token (optional)",
-  "roboflowKey": "Roboflow API Key"
+  "roboflowKey": "Roboflow API Key",
+  "imported": "Imported", "importNamePlaceholder": "Dataset name (optional)",
+  "importPathPlaceholder": "Path to dataset directory"
 }

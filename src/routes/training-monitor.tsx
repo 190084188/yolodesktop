@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Card, Button, Typography, Space, Tag, Row, Col } from "antd";
 import { StopOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import * as echarts from "echarts";
+import { useTranslation } from "react-i18next";
 import { useInvokeQuery, useInvokeMutation } from "../hooks/use-invoke";
 import { useTrainingStore, type TrainingMetrics } from "../stores/training-store";
 import { listen } from "@tauri-apps/api/event";
@@ -17,6 +18,7 @@ export default function TrainingMonitor() {
 
   const { status, metrics, logLines, setActiveRun, setStatus, appendMetrics, appendLog } =
     useTrainingStore();
+  const { t } = useTranslation(["training", "common"]);
 
   useInvokeQuery<Record<string, unknown>>(
     ["training-run", runId ?? ""], "get_training_run", { id: runId ?? "" }, { enabled: !!runId }
@@ -91,44 +93,44 @@ export default function TrainingMonitor() {
   return (
     <div>
       <Space style={{ marginBottom: 16 }}>
-        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/train")}>Back</Button>
-        <Typography.Title level={3} style={{ margin: 0 }}>Training Monitor</Typography.Title>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate("/train")}>{t("common:back")}</Button>
+        <Typography.Title level={3} style={{ margin: 0 }}>{t("monitor")}</Typography.Title>
         <Tag color={statusColor}>{status}</Tag>
       </Space>
 
       {status === "error" && (
         <ErrorBanner
-          message="Training encountered an error"
-          suggestion="Check the logs below for details."
+          message={t("common:trainingEncounteredError")}
+          suggestion={t("common:checkLogsBelow")}
           traceback={logLines.filter(l => l.includes("Error") || l.includes("Traceback")).join("\n")}
         />
       )}
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={16}>
-          <Card title="Training Metrics" size="small">
+          <Card title={t("metrics")} size="small">
             <div ref={chartRef} style={{ height: 400 }} />
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card title="Latest Metrics" size="small"
+          <Card title={t("latestMetrics")} size="small"
             extra={status === "running" && (
               <Button danger size="small" icon={<StopOutlined />}
-                onClick={() => runId && stopMutation.mutate({ run_id: runId })}>Stop</Button>
+                onClick={() => runId && stopMutation.mutate({ run_id: runId })}>{t("common:stop")}</Button>
             )}>
             {metrics.length > 0 ? (
               <Space direction="vertical" style={{ width: "100%" }}>
-                <div>Epoch: {metrics[metrics.length - 1].epoch}</div>
-                <div>Loss: {metrics[metrics.length - 1].loss?.toFixed(4)}</div>
-                <div>mAP50: {metrics[metrics.length - 1].map50?.toFixed(4) || "—"}</div>
-                <div>mAP50-95: {metrics[metrics.length - 1].map50_95?.toFixed(4) || "—"}</div>
+                <div>{t("epoch")}: {metrics[metrics.length - 1].epoch}</div>
+                <div>{t("loss")}: {metrics[metrics.length - 1].loss?.toFixed(4)}</div>
+                <div>{t("map50")}: {metrics[metrics.length - 1].map50?.toFixed(4) || "—"}</div>
+                <div>{t("map50_95")}: {metrics[metrics.length - 1].map50_95?.toFixed(4) || "—"}</div>
               </Space>
-            ) : <Typography.Text type="secondary">Waiting for first epoch...</Typography.Text>}
+            ) : <Typography.Text type="secondary">{t("waitingForEpoch")}</Typography.Text>}
           </Card>
         </Col>
       </Row>
 
-      <Card title="Training Logs" size="small" style={{ marginTop: 16 }}>
+      <Card title={t("trainingLogs")} size="small" style={{ marginTop: 16 }}>
         <LogStreamer lines={logLines} />
       </Card>
     </div>

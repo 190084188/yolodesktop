@@ -1,5 +1,6 @@
 import { Alert, Button, Space, Typography } from "antd";
 import { CopyOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 interface ErrorBannerProps {
   message: string;
@@ -9,6 +10,7 @@ interface ErrorBannerProps {
 }
 
 export default function ErrorBanner({ message, suggestion, traceback, onApplyFix }: ErrorBannerProps) {
+  const { t } = useTranslation("common");
   const handleCopy = () => {
     if (traceback) navigator.clipboard.writeText(traceback);
   };
@@ -21,9 +23,9 @@ export default function ErrorBanner({ message, suggestion, traceback, onApplyFix
         <Space direction="vertical" style={{ width: "100%" }}>
           {suggestion && <Typography.Text>{suggestion}</Typography.Text>}
           <Space>
-            {onApplyFix && <Button size="small" type="primary" onClick={onApplyFix}>Apply Fix</Button>}
+            {onApplyFix && <Button size="small" type="primary" onClick={onApplyFix}>{t("applyFix")}</Button>}
             {traceback && (
-              <Button size="small" icon={<CopyOutlined />} onClick={handleCopy}>Copy Details</Button>
+              <Button size="small" icon={<CopyOutlined />} onClick={handleCopy}>{t("copyDetails")}</Button>
             )}
           </Space>
         </Space>

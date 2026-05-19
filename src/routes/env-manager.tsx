@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, Button, Table, Tag, Typography, Descriptions } from "antd";
 import { PlusOutlined, DeleteOutlined, CheckCircleOutlined, SyncOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import { useInvokeQuery, useInvokeMutation } from "../hooks/use-invoke";
 
 interface YoloEnv {
@@ -17,6 +18,7 @@ const YOLO_VERSIONS = ["8", "11"];
 export default function EnvManager() {
   const [installing, setInstalling] = useState<string | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
+  const { t } = useTranslation("env");
 
   const { data: prereqs, isLoading: prereqLoading } = useInvokeQuery<PrereqCheck>(["prereqs"], "check_prereqs");
 
@@ -37,9 +39,9 @@ export default function EnvManager() {
   };
 
   const columns = [
-    { title: "Version", dataIndex: "version", key: "version", render: (v: string) => <Tag color="blue">YOLO v{v}</Tag> },
+    { title: t("common:version"), dataIndex: "version", key: "version", render: (v: string) => <Tag color="blue">YOLO v{v}</Tag> },
     {
-      title: "Status", dataIndex: "status", key: "status",
+      title: t("common:status"), dataIndex: "status", key: "status",
       render: (s: string) => {
         const color = s === "installed" ? "green" : s === "installing" ? "processing" : "default";
         const icon = s === "installed" ? <CheckCircleOutlined /> : s === "installing" ? <SyncOutlined spin /> : null;
@@ -47,9 +49,9 @@ export default function EnvManager() {
       },
     },
     { title: "CUDA", dataIndex: "cuda_available", key: "cuda", render: (v: boolean) => v ? <Tag color="green">Available</Tag> : <Tag>CPU Only</Tag> },
-    { title: "Installed", dataIndex: "installed_at", key: "installed_at", render: (v: string | null) => v ?? "—" },
+    { title: t("installed"), dataIndex: "installed_at", key: "installed_at", render: (v: string | null) => v ?? "—" },
     {
-      title: "Actions", key: "actions",
+      title: t("common:actions"), key: "actions",
       render: (_: unknown, record: YoloEnv) => (
         <Button danger size="small" icon={<DeleteOutlined />}
           onClick={() => deleteMutation.mutate({ id: record.id })} />
@@ -59,25 +61,25 @@ export default function EnvManager() {
 
   return (
     <div>
-      <Typography.Title level={3}>Environment Manager</Typography.Title>
+      <Typography.Title level={3}>{t("title")}</Typography.Title>
 
       {!prereqLoading && prereqs && (
         <Card size="small" style={{ marginBottom: 16 }}>
           <Descriptions column={3} size="small">
             <Descriptions.Item label="Python">
-              {prereqs.python_found ? <Tag color="green">{prereqs.python_version}</Tag> : <Tag color="red">Not Found</Tag>}
+              {prereqs.python_found ? <Tag color="green">{prereqs.python_version}</Tag> : <Tag color="red">{t("pythonNotFound")}</Tag>}
             </Descriptions.Item>
             <Descriptions.Item label="CUDA">
-              {prereqs.cuda_available ? <Tag color="green">Available</Tag> : <Tag>Not Detected</Tag>}
+              {prereqs.cuda_available ? <Tag color="green">{t("cudaAvailable")}</Tag> : <Tag>{t("cudaNotAvailable")}</Tag>}
             </Descriptions.Item>
-            <Descriptions.Item label="Available Versions">
+            <Descriptions.Item label={t("availableVersions")}>
               {YOLO_VERSIONS.map(v => (
                 <Button key={v} size="small" type="primary" icon={<PlusOutlined />}
                   onClick={() => handleInstall(v)}
                   loading={installing === v}
                   disabled={installing !== null || envs.some(e => e.version === v && e.status === "installed")}
                   style={{ marginRight: 8 }}>
-                  Install v{v}
+                  {t("installYolo")} v{v}
                 </Button>
               ))}
             </Descriptions.Item>
@@ -86,9 +88,9 @@ export default function EnvManager() {
       )}
 
       {installing && (
-        <Card size="small" title={`Installing YOLO v${installing}...`} style={{ marginBottom: 16 }}>
+        <Card size="small" title={`${t("installing")} YOLO v${installing}`} style={{ marginBottom: 16 }}>
           <div style={{ height: 200, overflow: "auto", background: "#1a1a2e", color: "#e0e0e0", fontFamily: "monospace", fontSize: 12, padding: 8, borderRadius: 4 }}>
-            {logs.length === 0 && <div>Starting installation...</div>}
+            {logs.length === 0 && <div>{t("phaseCollecting")}</div>}
             {logs.map((l, i) => <div key={i}>{l}</div>)}
           </div>
         </Card>

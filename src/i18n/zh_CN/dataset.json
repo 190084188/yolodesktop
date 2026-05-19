@@ -25,5 +25,7 @@
   "kaggleAutoDetected": "已自动检测到 Kaggle 凭据",
   "kaggleNotConfigured": "未配置 Kaggle 凭据",
   "huggingfaceToken": "HuggingFace Token (可选)",
-  "roboflowKey": "Roboflow API Key"
+  "roboflowKey": "Roboflow API Key",
+  "imported": "导入时间", "importNamePlaceholder": "数据集名称 (可选)",
+  "importPathPlaceholder": "数据集目录路径"
 }

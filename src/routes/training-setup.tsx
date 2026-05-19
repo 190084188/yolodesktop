@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Form, Select, Button, Typography, InputNumber, Space } from "antd";
 import { PlayCircleOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import { useInvokeQuery, useInvokeMutation } from "../hooks/use-invoke";
 import { useWorkspaceStore } from "../stores/workspace-store";
 import YamlEditor from "../components/yaml-editor";
@@ -49,6 +50,7 @@ export default function TrainingSetup() {
   const [selectedEnv, setSelectedEnv] = useState<string>();
   const [selectedDataset, setSelectedDataset] = useState<string>();
   const [selectedModel, setSelectedModel] = useState("yolov8n.pt");
+  const { t } = useTranslation(["training", "common"]);
 
   const { data: envs = [] } = useInvokeQuery<Array<{ id: string; version: string; status: string }>>(["envs"], "list_envs");
   const { data: datasets = [] } = useInvokeQuery<Array<{ id: string; name: string }>>(
@@ -74,20 +76,20 @@ export default function TrainingSetup() {
 
   return (
     <div>
-      <Typography.Title level={3}>Training Setup</Typography.Title>
+      <Typography.Title level={3}>{t("setup")}</Typography.Title>
 
       <Space direction="vertical" style={{ width: "100%" }} size="large">
-        <Card title="Configuration Preset" size="small">
+        <Card title={t("configPreset")} size="small">
           <Form layout="inline">
-            <Form.Item label="YOLO Environment">
-              <Select style={{ width: 200 }} placeholder="Select env" value={selectedEnv} onChange={setSelectedEnv}
+            <Form.Item label={t("yoloEnvironment")}>
+              <Select style={{ width: 200 }} placeholder={t("selectEnv")} value={selectedEnv} onChange={setSelectedEnv}
                 options={(envs as Array<{ id: string; version: string; status: string }>).filter(e => e.status === "installed").map(e => ({ value: e.id, label: `YOLO v${e.version}` }))} />
             </Form.Item>
-            <Form.Item label="Dataset">
-              <Select style={{ width: 200 }} placeholder="Select dataset" value={selectedDataset} onChange={setSelectedDataset}
+            <Form.Item label={t("dataset")}>
+              <Select style={{ width: 200 }} placeholder={t("selectDataset")} value={selectedDataset} onChange={setSelectedDataset}
                 options={(datasets as Array<{ id: string; name: string }>).map(d => ({ value: d.id, label: d.name }))} />
             </Form.Item>
-            <Form.Item label="Base Model">
+            <Form.Item label={t("baseModel")}>
               <Select style={{ width: 180 }} value={selectedModel} onChange={setSelectedModel}
                 options={[
                   { value: "yolov8n.pt", label: "YOLOv8 Nano" },
@@ -105,24 +107,24 @@ export default function TrainingSetup() {
           </Form>
         </Card>
 
-        <Card title="Quick Parameters">
+        <Card title={t("basicParams")}>
           <Form layout="vertical">
             <Space wrap>
-              <Form.Item label="Epochs"><InputNumber min={1} max={1000} defaultValue={100} /></Form.Item>
-              <Form.Item label="Batch Size"><InputNumber min={1} max={128} defaultValue={16} /></Form.Item>
-              <Form.Item label="Image Size"><InputNumber min={320} max={1280} step={32} defaultValue={640} /></Form.Item>
-              <Form.Item label="Learning Rate"><InputNumber min={0.0001} max={0.1} step={0.0001} defaultValue={0.001} /></Form.Item>
+              <Form.Item label={t("epochs")}><InputNumber min={1} max={1000} defaultValue={100} /></Form.Item>
+              <Form.Item label={t("batch")}><InputNumber min={1} max={128} defaultValue={16} /></Form.Item>
+              <Form.Item label={t("imgsz")}><InputNumber min={320} max={1280} step={32} defaultValue={640} /></Form.Item>
+              <Form.Item label={t("lr0")}><InputNumber min={0.0001} max={0.1} step={0.0001} defaultValue={0.001} /></Form.Item>
             </Space>
           </Form>
         </Card>
 
-        <Card title="Advanced Config (YAML)">
+        <Card title={t("advancedParams")}>
           <YamlEditor value={yamlContent} onChange={setYamlContent} height="350px" />
         </Card>
 
         <Button type="primary" size="large" icon={<PlayCircleOutlined />} onClick={handleStart}
           loading={startMutation.isPending} disabled={!selectedEnv || !selectedDataset || !activeProject}>
-          Start Training
+          {t("startTraining")}
         </Button>
       </Space>
     </div>

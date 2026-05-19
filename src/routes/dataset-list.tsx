@@ -6,6 +6,7 @@ import { useInvokeQuery, useInvokeMutation } from "../hooks/use-invoke";
 import { useWorkspaceStore } from "../stores/workspace-store";
 import { FORMAT_LABELS, FORMAT_COLORS } from "../lib/format-converters";
 import LogStreamer from "../components/log-streamer";
+import { useTranslation } from "react-i18next";
 
 interface Dataset {
   id: string; project_id: string; name: string; format: string;
@@ -21,6 +22,7 @@ export default function DatasetList() {
   const [importPath, setImportPath] = useState("");
   const [importLogs, setImportLogs] = useState<string[]>([]);
   const [importing, setImporting] = useState(false);
+  const { t } = useTranslation(["dataset", "common"]);
 
   const { data: datasets = [], isLoading } = useInvokeQuery<Dataset[]>(
     ["datasets", activeProject?.id ?? ""], "list_datasets",
@@ -51,16 +53,16 @@ export default function DatasetList() {
   };
 
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
-    { title: "Format", dataIndex: "format", key: "format", render: (f: string) => <Tag color={FORMAT_COLORS[f] || "default"}>{FORMAT_LABELS[f] || f}</Tag> },
-    { title: "Images", dataIndex: "image_count", key: "image_count" },
-    { title: "Classes", dataIndex: "class_count", key: "class_count" },
-    { title: "Imported", dataIndex: "imported_at", key: "imported_at", render: (v: string) => v ? new Date(v).toLocaleDateString() : "—" },
+    { title: t("common:name"), dataIndex: "name", key: "name" },
+    { title: t("common:format"), dataIndex: "format", key: "format", render: (f: string) => <Tag color={FORMAT_COLORS[f] || "default"}>{FORMAT_LABELS[f] || f}</Tag> },
+    { title: t("common:images"), dataIndex: "image_count", key: "image_count" },
+    { title: t("common:classes"), dataIndex: "class_count", key: "class_count" },
+    { title: t("imported"), dataIndex: "imported_at", key: "imported_at", render: (v: string) => v ? new Date(v).toLocaleDateString() : "—" },
     {
-      title: "Actions", key: "actions",
+      title: t("common:actions"), key: "actions",
       render: (_: unknown, record: Dataset) => (
         <Space>
-          <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/datasets/${record.id}`)}>View</Button>
+          <Button size="small" icon={<EyeOutlined />} onClick={() => navigate(`/datasets/${record.id}`)}>{t("common:view")}</Button>
           <Button size="small" danger icon={<DeleteOutlined />} onClick={() => deleteMutation.mutate({ id: record.id })} />
         </Space>
       ),
@@ -70,23 +72,23 @@ export default function DatasetList() {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-        <Typography.Title level={3} style={{ margin: 0 }}>Datasets</Typography.Title>
+        <Typography.Title level={3} style={{ margin: 0 }}>{t("title")}</Typography.Title>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setImportModalOpen(true)} disabled={!activeProject}>
-          Import Dataset
+          {t("importDataset")}
         </Button>
       </div>
 
-      {!activeProject && <Alert message="Create or select a project first" type="info" style={{ marginBottom: 16 }} />}
+      {!activeProject && <Alert message={t("common:selectProjectFirst")} type="info" style={{ marginBottom: 16 }} />}
 
       <Card>
         <Table dataSource={datasets} columns={columns} rowKey="id" loading={isLoading} pagination={false} />
       </Card>
 
-      <Modal title="Import Dataset" open={importModalOpen} onOk={handleImport}
-        onCancel={() => setImportModalOpen(false)} confirmLoading={importing} okText="Import">
+      <Modal title={t("importDataset")} open={importModalOpen} onOk={handleImport}
+        onCancel={() => setImportModalOpen(false)} confirmLoading={importing} okText={t("common:import")}>
         <Space direction="vertical" style={{ width: "100%" }}>
-          <Input placeholder="Dataset name (optional)" value={importName} onChange={(e) => setImportName(e.target.value)} />
-          <Input placeholder="Path to dataset directory" value={importPath} onChange={(e) => setImportPath(e.target.value)} />
+          <Input placeholder={t("importNamePlaceholder")} value={importName} onChange={(e) => setImportName(e.target.value)} />
+          <Input placeholder={t("importPathPlaceholder")} value={importPath} onChange={(e) => setImportPath(e.target.value)} />
           {importing && <LogStreamer lines={importLogs} />}
         </Space>
       </Modal>

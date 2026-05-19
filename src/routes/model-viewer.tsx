@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, Button, Typography, Space, Alert } from "antd";
 import { ApartmentOutlined, PlayCircleOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import { useInvokeMutation } from "../hooks/use-invoke";
 import YamlEditor from "../components/yaml-editor";
 import ModelGraph from "../components/model-graph";
@@ -42,6 +43,7 @@ interface GraphNode {
 export default function ModelViewer() {
   const [yamlInput, setYamlInput] = useState(SAMPLE_YAML);
   const [graphData, setGraphData] = useState<{ nodes: Array<Record<string, unknown>>; edges: Array<Record<string, unknown>> } | null>(null);
+  const { t } = useTranslation("common");
 
   const parseMutation = useInvokeMutation<{ nodes: GraphNode[]; edges: Array<{ id: string; from: string; to: string }> }>("parse_model_config");
 
@@ -67,7 +69,7 @@ export default function ModelViewer() {
 
   return (
     <div>
-      <Typography.Title level={3}><ApartmentOutlined /> Model Graph Viewer</Typography.Title>
+      <Typography.Title level={3}><ApartmentOutlined /> {t("modelGraph")}</Typography.Title>
       <Alert message="Paste a YOLO model YAML configuration to visualize the architecture." type="info" style={{ marginBottom: 16 }} />
 
       <Space direction="vertical" style={{ width: "100%" }} size="large">
