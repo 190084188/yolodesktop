@@ -1,5 +1,6 @@
 {
   "title": "Dataset Manager", "importDataset": "Import Dataset",
+  "localDatasets": "Local Datasets",
   "datasetName": "Dataset Name", "sourcePath": "Dataset Path",
   "formatSpec": "Format Specification", "scanFolders": "Scan Folders",
   "scanning": "Scanning...", "refreshList": "Refresh List",

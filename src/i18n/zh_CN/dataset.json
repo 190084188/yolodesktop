@@ -1,5 +1,6 @@
 {
   "title": "数据集管理", "importDataset": "导入数据集",
+  "localDatasets": "本地数据集",
   "datasetName": "数据集名称", "sourcePath": "数据集路径",
   "formatSpec": "格式规范", "scanFolders": "扫描文件夹",
   "scanning": "扫描中...", "refreshList": "刷新列表",
