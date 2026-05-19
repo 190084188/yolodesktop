@@ -24,12 +24,18 @@
     "codemirror": "^6.0.2",
     "echarts": "^6.0.0",
     "echarts-for-react": "^3.0.6",
+    "i18next": "^26.2.0",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "lodash.debounce": "^4.0.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-i18next": "^17.0.8",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.15.1",
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@types/react": "^18.3.28",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^6.0.2",
