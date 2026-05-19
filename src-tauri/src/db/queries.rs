@@ -1,6 +1,7 @@
 use crate::db::DbState;
 use crate::errors::AppResult;
 use rusqlite::params;
+use rusqlite::Connection;
 
 // ---- Projects ----
 
@@ -422,5 +423,67 @@ pub fn list_plugins(state: &DbState) -> AppResult<Vec<PluginRow>> {
 pub fn delete_plugin(state: &DbState, id: &str) -> AppResult<()> {
     let conn = state.conn.lock().unwrap();
     conn.execute("DELETE FROM annotation_plugins WHERE id = ?1", params![id])?;
+    Ok(())
+}
+
+// --- Settings ---
+
+pub fn get_setting(conn: &Connection, key: &str) -> Result<Option<String>, rusqlite::Error> {
+    let mut stmt = conn.prepare("SELECT value FROM settings WHERE key = ?1")?;
+    let result = stmt.query_row([key], |row| row.get::<_, String>(0));
+    match result {
+        Ok(v) => Ok(Some(v)),
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+        Err(e) => Err(e),
+    }
+}
+
+pub fn set_setting(conn: &Connection, key: &str, value: &str) -> Result<(), rusqlite::Error> {
+    conn.execute(
+        "INSERT INTO settings (key, value, updated_at) VALUES (?1, ?2, datetime('now'))
+         ON CONFLICT(key) DO UPDATE SET value = ?2, updated_at = datetime('now')",
+        [key, value],
+    )?;
+    Ok(())
+}
+
+// --- Search Cache ---
+
+pub fn get_search_cache(
+    conn: &Connection,
+    keyword: &str,
+    source: &str,
+    filters_json: &str,
+) -> Result<Option<String>, rusqlite::Error> {
+    let mut stmt = conn.prepare(
+        "SELECT results_json FROM search_cache
+         WHERE keyword = ?1 AND source = ?2 AND filters_json = ?3
+         AND cached_at > datetime('now', '-1 hour')",
+    )?;
+    let result = stmt.query_row(rusqlite::params![keyword, source, filters_json], |row| {
+        row.get::<_, String>(0)
+    });
+    match result {
+        Ok(v) => Ok(Some(v)),
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(None),
+        Err(e) => Err(e),
+    }
+}
+
+pub fn set_search_cache(
+    conn: &Connection,
+    keyword: &str,
+    source: &str,
+    filters_json: &str,
+    results_json: &str,
+    source_updated_at: Option<&str>,
+) -> Result<(), rusqlite::Error> {
+    conn.execute(
+        "INSERT INTO search_cache (keyword, source, filters_json, results_json, cached_at, source_updated_at)
+         VALUES (?1, ?2, ?3, ?4, datetime('now'), ?5)
+         ON CONFLICT(keyword, source, filters_json) DO UPDATE
+         SET results_json = ?4, cached_at = datetime('now'), source_updated_at = ?5",
+        rusqlite::params![keyword, source, filters_json, results_json, source_updated_at],
+    )?;
     Ok(())
 }

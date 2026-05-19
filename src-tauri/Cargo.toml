@@ -28,3 +28,4 @@ which = "6"
 regex = "1"
 thiserror = "1"
 dirs-next = "2"
+reqwest = { version = "0.12", features = ["default-tls"] }
