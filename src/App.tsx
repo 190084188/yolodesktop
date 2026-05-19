@@ -1,7 +1,10 @@
+import "./i18n";
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ConfigProvider, theme } from "antd";
 import zhCN from "antd/locale/zh_CN";
+import enUS from "antd/locale/en_US";
+import { useTranslation } from "react-i18next";
 import AppShell from "./components/app-shell";
 import Dashboard from "./routes/dashboard";
 import EnvManager from "./routes/env-manager";
@@ -16,10 +19,11 @@ import Settings from "./routes/settings";
 
 export default function App() {
   const [isDark, setIsDark] = useState(true);
+  const { i18n } = useTranslation();
 
   return (
     <ConfigProvider
-      locale={zhCN}
+      locale={i18n.language === "en_US" ? enUS : zhCN}
       theme={{
         algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: { colorPrimary: "#1677ff" },

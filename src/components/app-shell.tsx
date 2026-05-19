@@ -20,6 +20,7 @@ import {
 import { useWorkspaceStore, type Project } from "../stores/workspace-store";
 import { useInvokeQuery, useInvokeMutation } from "../hooks/use-invoke";
 import ErrorBoundary from "./error-boundary";
+import { useTranslation } from "react-i18next";
 
 const { Sider, Header, Content } = Layout;
 
@@ -38,6 +39,7 @@ export default function AppShell({ isDark, onToggleTheme }: AppShellProps) {
   const { activeProject, projects, setProjects, setActiveProject } = useWorkspaceStore();
   const { token } = antTheme.useToken();
   const { message } = App.useApp();
+  const { t } = useTranslation("common");
 
   const { data: loadedProjects } = useInvokeQuery<Project[]>(["projects"], "list_projects");
 
@@ -53,7 +55,7 @@ export default function AppShell({ isDark, onToggleTheme }: AppShellProps) {
       setCreateModalOpen(false);
       setNewProjectName("");
       setNewProjectPath("");
-      message.success("项目已创建");
+      message.success(t("projectCreated"));
     },
   });
 
@@ -66,7 +68,7 @@ export default function AppShell({ isDark, onToggleTheme }: AppShellProps) {
     // Use native folder picker from tauri-plugin-dialog
     try {
       const { open } = await import("@tauri-apps/plugin-dialog");
-      const selected = await open({ directory: true, multiple: false, title: "选择项目路径" });
+      const selected = await open({ directory: true, multiple: false, title: t("projectPathSelectTitle") });
       if (selected && typeof selected === "string") setNewProjectPath(selected);
     } catch {
       // Fallback: user types path manually
@@ -74,14 +76,14 @@ export default function AppShell({ isDark, onToggleTheme }: AppShellProps) {
   };
 
   const menuItems = [
-    { key: "/", icon: <DashboardOutlined />, label: "仪表盘" },
-    { key: "/env", icon: <CloudServerOutlined />, label: "环境管理" },
-    { key: "/datasets", icon: <DatabaseOutlined />, label: "数据集" },
-    { key: "/train", icon: <ExperimentOutlined />, label: "训练管理" },
-    { key: "/models", icon: <ApartmentOutlined />, label: "模型图" },
-    { key: "/export", icon: <ExportOutlined />, label: "模型导出" },
-    { key: "/plugins", icon: <AppstoreOutlined />, label: "插件管理" },
-    { key: "/settings", icon: <SettingOutlined />, label: "设置" },
+    { key: "/", icon: <DashboardOutlined />, label: t("dashboard") },
+    { key: "/env", icon: <CloudServerOutlined />, label: t("envManager") },
+    { key: "/datasets", icon: <DatabaseOutlined />, label: t("datasets") },
+    { key: "/train", icon: <ExperimentOutlined />, label: t("training") },
+    { key: "/models", icon: <ApartmentOutlined />, label: t("modelGraph") },
+    { key: "/export", icon: <ExportOutlined />, label: t("export") },
+    { key: "/plugins", icon: <AppstoreOutlined />, label: t("plugins") },
+    { key: "/settings", icon: <SettingOutlined />, label: t("settings") },
   ];
 
   const selectedKey = "/" + location.pathname.split("/")[1];
@@ -103,7 +105,7 @@ export default function AppShell({ isDark, onToggleTheme }: AppShellProps) {
           textAlign: "center",
         }}>
           <Typography.Title level={4} style={{ margin: 0, color: token.colorPrimary }}>
-            {collapsed ? "YD" : "YoloDesktop"}
+            {collapsed ? t("appTitleShort") : t("appTitle")}
           </Typography.Title>
         </div>
 
@@ -112,19 +114,19 @@ export default function AppShell({ isDark, onToggleTheme }: AppShellProps) {
             <Space.Compact style={{ width: "100%" }}>
               <Select
                 style={{ flex: 1 }}
-                placeholder="选择项目"
+                placeholder={t("selectProject")}
                 value={activeProject?.id}
                 onChange={(id) => {
                   const project = projects.find((p) => p.id === id);
                   setActiveProject(project ?? null);
                 }}
                 options={projects.map((p) => ({ value: p.id, label: p.name }))}
-                notFoundContent="暂无项目"
+                notFoundContent={t("noProjects")}
               />
               <Button
                 icon={<PlusOutlined />}
                 onClick={() => setCreateModalOpen(true)}
-                title="创建项目"
+                title={t("createProject")}
               />
             </Space.Compact>
           </div>
@@ -155,7 +157,7 @@ export default function AppShell({ isDark, onToggleTheme }: AppShellProps) {
           />
           <Space>
             <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-              {activeProject ? `当前项目: ${activeProject.name}` : "未选择项目"}
+              {activeProject ? `${t("currentProject")}: ${activeProject.name}` : t("noProjectSelected")}
             </Typography.Text>
             <Button
               type="text"
@@ -180,27 +182,27 @@ export default function AppShell({ isDark, onToggleTheme }: AppShellProps) {
       </Layout>
 
       <Modal
-        title="创建新项目"
+        title={t("createProject")}
         open={createModalOpen}
         onOk={handleCreateProject}
         onCancel={() => setCreateModalOpen(false)}
         confirmLoading={createProjectMutation.isPending}
-        okText="创建"
-        cancelText="取消"
+        okText={t("create")}
+        cancelText={t("cancel")}
       >
         <Space direction="vertical" style={{ width: "100%" }}>
           <div>
-            <Typography.Text>项目名称</Typography.Text>
+            <Typography.Text>{t("projectName")}</Typography.Text>
             <Input
-              placeholder="输入项目名称"
+              placeholder={t("projectName")}
               value={newProjectName}
               onChange={(e) => setNewProjectName(e.target.value)}
             />
           </div>
           <div>
-            <Typography.Text>项目路径</Typography.Text>
+            <Typography.Text>{t("projectPath")}</Typography.Text>
             <Input
-              placeholder="选择或输入项目路径"
+              placeholder={t("projectPath")}
               value={newProjectPath}
               onChange={(e) => setNewProjectPath(e.target.value)}
               addonAfter={
