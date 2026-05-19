@@ -19,6 +19,8 @@
   "hsvH": "HSV-H Augmentation", "hsvS": "HSV-S Augmentation", "hsvV": "HSV-V Augmentation",
   "degrees": "Rotation Degrees", "translate": "Translation", "scale": "Scale",
   "mosaic": "Mosaic Augmentation", "mixup": "MixUp Augmentation",
+  "fliplr": "Flip LR", "flipud": "Flip UD",
+  "augmentation": "Augmentation",
   "epoch": "Epoch", "loss": "Loss", "map50": "mAP50",
   "map50_95": "mAP50-95", "precision": "Precision", "recall": "Recall",
   "bestMap50": "Best mAP50", "gpuUtilization": "GPU Utilization",

@@ -19,6 +19,8 @@
   "hsvH": "HSV-H 增强", "hsvS": "HSV-S 增强", "hsvV": "HSV-V 增强",
   "degrees": "旋转角度", "translate": "平移", "scale": "缩放",
   "mosaic": "马赛克增强", "mixup": "混合增强",
+  "fliplr": "左右翻转", "flipud": "上下翻转",
+  "augmentation": "数据增强",
   "epoch": "轮次", "loss": "损失", "map50": "mAP50",
   "map50_95": "mAP50-95", "precision": "精确率", "recall": "召回率",
   "bestMap50": "最佳 mAP50", "gpuUtilization": "GPU 利用率",
