@@ -57,6 +57,7 @@ pub fn run() {
             commands::dataset::search_roboflow,
             commands::dataset::check_connectivity,
             commands::dataset::scan_dataset_folders,
+            commands::dataset::download_test_dataset,
             commands::dataset::get_dataset_setting,
             commands::dataset::set_dataset_setting,
             commands::training::start_training,

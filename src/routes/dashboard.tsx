@@ -1,17 +1,17 @@
 import { Card, Col, Row, Statistic, Typography, Table, Tag, Button, Alert } from "antd";
 import {
   ExperimentOutlined, DatabaseOutlined, CloudServerOutlined,
-  ExportOutlined, ArrowLeftOutlined,
+  ExportOutlined, ArrowLeftOutlined, DownloadOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useInvokeQuery } from "../hooks/use-invoke";
+import { useInvokeQuery, useInvokeMutation } from "../hooks/use-invoke";
 import { useWorkspaceStore } from "../stores/workspace-store";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { activeProject } = useWorkspaceStore();
-  const { t } = useTranslation(["common", "training"]);
+  const { t } = useTranslation(["common", "training", "dataset"]);
 
   const { data: envs = [] } = useInvokeQuery<unknown[]>(["envs"], "list_envs");
   const { data: datasets = [] } = useInvokeQuery<unknown[]>(
@@ -30,6 +30,8 @@ export default function Dashboard() {
     id: string; status: string; best_map50: number | null;
     started_at: string | null;
   }>).slice(0, 5);
+
+  const downloadTestMutation = useInvokeMutation<Record<string, unknown>>("download_test_dataset");
 
   const runColumns = [
     { title: t("common:runId"), dataIndex: "id", key: "id", render: (v: string) => v.slice(0, 8) + "..." },
@@ -92,6 +94,24 @@ export default function Dashboard() {
           </Card>
         </Col>
       </Row>
+
+      {/* Quick actions: download test dataset */}
+      <Card style={{ marginTop: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div>
+            <Typography.Text strong>{t("dataset:downloadTestDataset")}</Typography.Text>
+            <br />
+            <Typography.Text type="secondary">{t("dataset:downloadTestDatasetDesc")}</Typography.Text>
+          </div>
+          <Button
+            icon={<DownloadOutlined />}
+            loading={downloadTestMutation.isPending}
+            onClick={() => downloadTestMutation.mutate({ outputDir: "" })}
+          >
+            {t("dataset:downloadTestDataset")}
+          </Button>
+        </div>
+      </Card>
 
       <Card title={t("common:recentTrainingRuns")} style={{ marginTop: 16 }}>
         {activeProject ? (

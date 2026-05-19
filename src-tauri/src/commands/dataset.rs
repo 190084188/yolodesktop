@@ -341,6 +341,19 @@ pub async fn scan_dataset_folders(
 // Settings commands
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Test dataset download
+// ---------------------------------------------------------------------------
+
+#[tauri::command]
+pub async fn download_test_dataset(
+    output_dir: String,
+) -> Result<serde_json::Value, AppError> {
+    let stdout = run_python_script("download_test_dataset.py", &[&output_dir])?;
+    serde_json::from_str(&stdout)
+        .map_err(|e| AppError::CommandFailed(format!("Parse error: {}", e)))
+}
+
 #[tauri::command]
 pub async fn get_dataset_setting(
     state: State<'_, DbState>,
