@@ -1,5 +1,5 @@
 use crate::db::{queries, DbState};
-use crate::errors::AppError;
+use crate::errors::{AppError, AppResult};
 use crate::python::venv::VenvManager;
 use serde::Serialize;
 use tauri::{AppHandle, Emitter, State};
@@ -165,4 +165,199 @@ fn copy_dir_recursive(src: &std::path::Path, dst: &std::path::Path) -> Result<()
         }
     }
     Ok(())
+}
+
+// ---------------------------------------------------------------------------
+// Helper: run a Python script located alongside the binary
+// ---------------------------------------------------------------------------
+
+fn run_python_script(script_name: &str, args: &[&str]) -> AppResult<String> {
+    let script = {
+        let exe_dir = std::env::current_exe()
+            .ok()
+            .and_then(|p| p.parent().map(|p| p.to_path_buf()))
+            .unwrap_or_default();
+        let dev_path = exe_dir.join(format!("../../python/{}", script_name));
+        let prod_path = exe_dir.join(format!("python/{}", script_name));
+        if dev_path.exists() {
+            dev_path
+        } else if prod_path.exists() {
+            prod_path
+        } else {
+            std::env::current_dir()
+                .unwrap_or_default()
+                .join(format!("../python/{}", script_name))
+        }
+    };
+    let python = "python";
+
+    let output = std::process::Command::new(python)
+        .arg(script.to_str().unwrap())
+        .args(args)
+        .output()
+        .map_err(|e| AppError::CommandFailed(format!("{} failed: {}", script_name, e)))?;
+
+    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+}
+
+// ---------------------------------------------------------------------------
+// Search commands (one per source for progressive frontend rendering)
+// ---------------------------------------------------------------------------
+
+#[tauri::command]
+pub async fn search_kaggle(
+    state: State<'_, DbState>,
+    keyword: String,
+) -> Result<serde_json::Value, AppError> {
+    let conn = state.conn.lock().unwrap();
+    if let Ok(Some(cached)) =
+        crate::db::queries::get_search_cache(&conn, &keyword, "kaggle", "{}")
+    {
+        if let Ok(val) = serde_json::from_str(&cached) {
+            return Ok(val);
+        }
+    }
+    drop(conn);
+
+    let stdout = run_python_script("search_kaggle.py", &[&keyword])?;
+    let result: serde_json::Value = serde_json::from_str(&stdout)
+        .map_err(|e| AppError::CommandFailed(format!("Parse error: {}", e)))?;
+
+    let conn = state.conn.lock().unwrap();
+    crate::db::queries::set_search_cache(
+        &conn, &keyword, "kaggle", "{}", &result.to_string(), None,
+    )
+    .ok();
+    Ok(result)
+}
+
+#[tauri::command]
+pub async fn search_huggingface(
+    state: State<'_, DbState>,
+    keyword: String,
+) -> Result<serde_json::Value, AppError> {
+    let conn = state.conn.lock().unwrap();
+    if let Ok(Some(cached)) =
+        crate::db::queries::get_search_cache(&conn, &keyword, "huggingface", "{}")
+    {
+        if let Ok(val) = serde_json::from_str(&cached) {
+            return Ok(val);
+        }
+    }
+    drop(conn);
+
+    let stdout = run_python_script("search_huggingface.py", &[&keyword, "20"])?;
+    let result: serde_json::Value = serde_json::from_str(&stdout)
+        .map_err(|e| AppError::CommandFailed(format!("Parse error: {}", e)))?;
+
+    let conn = state.conn.lock().unwrap();
+    crate::db::queries::set_search_cache(
+        &conn, &keyword, "huggingface", "{}", &result.to_string(), None,
+    )
+    .ok();
+    Ok(result)
+}
+
+#[tauri::command]
+pub async fn search_roboflow(
+    state: State<'_, DbState>,
+    keyword: String,
+) -> Result<serde_json::Value, AppError> {
+    let conn = state.conn.lock().unwrap();
+    if let Ok(Some(cached)) =
+        crate::db::queries::get_search_cache(&conn, &keyword, "roboflow", "{}")
+    {
+        if let Ok(val) = serde_json::from_str(&cached) {
+            return Ok(val);
+        }
+    }
+    drop(conn);
+
+    let stdout = run_python_script("search_roboflow.py", &[&keyword])?;
+    let result: serde_json::Value = serde_json::from_str(&stdout)
+        .map_err(|e| AppError::CommandFailed(format!("Parse error: {}", e)))?;
+
+    let conn = state.conn.lock().unwrap();
+    crate::db::queries::set_search_cache(
+        &conn, &keyword, "roboflow", "{}", &result.to_string(), None,
+    )
+    .ok();
+    Ok(result)
+}
+
+// ---------------------------------------------------------------------------
+// Connectivity check
+// ---------------------------------------------------------------------------
+
+#[tauri::command]
+pub async fn check_connectivity() -> Result<serde_json::Value, AppError> {
+    let client = reqwest::Client::new();
+    let urls = [
+        ("kaggle", "https://www.kaggle.com"),
+        ("huggingface", "https://huggingface.co"),
+        ("roboflow", "https://universe.roboflow.com"),
+    ];
+    let mut results = serde_json::Map::new();
+    for (name, url) in &urls {
+        match client
+            .head(*url)
+            .timeout(std::time::Duration::from_secs(5))
+            .send()
+            .await
+        {
+            Ok(resp) => {
+                results.insert(
+                    name.to_string(),
+                    serde_json::json!({
+                        "online": resp.status().is_success() || resp.status().is_redirection(),
+                    }),
+                );
+            }
+            Err(_) => {
+                results.insert(
+                    name.to_string(),
+                    serde_json::json!({"online": false}),
+                );
+            }
+        }
+    }
+    Ok(serde_json::Value::Object(results))
+}
+
+// ---------------------------------------------------------------------------
+// Dataset folder scanner
+// ---------------------------------------------------------------------------
+
+#[tauri::command]
+pub async fn scan_dataset_folders(
+    root_path: String,
+) -> Result<Vec<serde_json::Value>, AppError> {
+    let stdout = run_python_script("scan_folders.py", &[&root_path])?;
+    serde_json::from_str(&stdout)
+        .map_err(|e| AppError::CommandFailed(format!("Parse error: {}", e)))
+}
+
+// ---------------------------------------------------------------------------
+// Settings commands
+// ---------------------------------------------------------------------------
+
+#[tauri::command]
+pub async fn get_dataset_setting(
+    state: State<'_, DbState>,
+    key: String,
+) -> Result<Option<String>, AppError> {
+    let conn = state.conn.lock().unwrap();
+    crate::db::queries::get_setting(&conn, &key)
+        .map_err(|e| AppError::Db(e))
+}
+
+#[tauri::command]
+pub async fn set_dataset_setting(
+    state: State<'_, DbState>,
+    key: String,
+    value: String,
+) -> Result<(), AppError> {
+    let conn = state.conn.lock().unwrap();
+    crate::db::queries::set_setting(&conn, &key, &value)
+        .map_err(|e| AppError::Db(e))
 }
