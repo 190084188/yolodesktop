@@ -1,3 +1,5 @@
+use crate::errors::AppError;
+
 mod commands;
 mod db;
 mod errors;
@@ -7,6 +9,14 @@ mod python;
 use commands::training::TrainingState;
 use db::{migrate, DbState};
 use std::sync::Mutex;
+
+#[tauri::command]
+async fn pick_folder() -> Result<Option<String>, AppError> {
+    use tauri_plugin_dialog::DialogExt;
+    // This is a placeholder — the dialog plugin requires a window handle
+    // For now, return None and let the frontend handle path input manually
+    Ok(None)
+}
 
 pub fn run() {
     let app_dir = dirs_next::data_dir()
@@ -24,11 +34,13 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
         .manage(db_state)
         .manage(TrainingState {
             active_process: Mutex::new(None),
         })
         .invoke_handler(tauri::generate_handler![
+            pick_folder,
             commands::env::check_prereqs,
             commands::env::install_yolo,
             commands::env::list_envs,

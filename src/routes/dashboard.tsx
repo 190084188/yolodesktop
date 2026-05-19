@@ -1,7 +1,7 @@
-import { Card, Col, Row, Statistic, Typography, Table, Tag, Button } from "antd";
+import { Card, Col, Row, Statistic, Typography, Table, Tag, Button, Alert } from "antd";
 import {
   ExperimentOutlined, DatabaseOutlined, CloudServerOutlined,
-  ExportOutlined, PlusOutlined,
+  ExportOutlined, ArrowLeftOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useInvokeQuery } from "../hooks/use-invoke";
@@ -96,9 +96,20 @@ export default function Dashboard() {
           <Table dataSource={recentRuns} columns={runColumns} rowKey="id" pagination={false} size="small" />
         ) : (
           <div style={{ textAlign: "center", padding: 40 }}>
-            <Typography.Text type="secondary">Select or create a project to get started</Typography.Text>
-            <br />
-            <Button type="primary" icon={<PlusOutlined />} style={{ marginTop: 16 }}>Create Project</Button>
+            <Alert
+              message="请先创建或选择一个项目"
+              description="使用左侧边栏顶部的 + 按钮创建新项目，然后即可使用所有功能。"
+              type="info"
+              showIcon
+              style={{ maxWidth: 500, margin: "0 auto 16px" }}
+            />
+            <Button type="primary" icon={<ArrowLeftOutlined />} onClick={() => {
+              // Guide user: focus the sidebar
+              const selectEl = document.querySelector(".ant-select-selector") as HTMLElement;
+              selectEl?.focus();
+            }}>
+              查看侧边栏
+            </Button>
           </div>
         )}
       </Card>

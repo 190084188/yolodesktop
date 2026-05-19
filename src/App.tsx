@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ConfigProvider, theme } from "antd";
+import zhCN from "antd/locale/zh_CN";
 import AppShell from "./components/app-shell";
 import Dashboard from "./routes/dashboard";
 import EnvManager from "./routes/env-manager";
@@ -18,6 +19,7 @@ export default function App() {
 
   return (
     <ConfigProvider
+      locale={zhCN}
       theme={{
         algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: { colorPrimary: "#1677ff" },
