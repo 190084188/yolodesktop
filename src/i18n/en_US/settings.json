@@ -1,0 +1,13 @@
+{
+  "title": "Settings", "general": "General", "workspaceDir": "Workspace Directory",
+  "pythonPath": "Python Path", "language": "Language", "theme": "Theme",
+  "darkMode": "Dark Mode", "autoStartTensorboard": "Auto-start TensorBoard",
+  "checkUpdates": "Check for updates on startup",
+  "datasetSettings": "Dataset Settings", "datasetRootDir": "Dataset Root Directory",
+  "datasetRootDirHelp": "Scan subfolders in this directory as datasets",
+  "extraModelPaths": "Extra Model Search Paths",
+  "extraModelPathsPlaceholder": "e.g. D:\\models\\yolo;/home/user/custom_weights (semicolon separated)",
+  "apiKeys": "API Keys",
+  "systemInfo": "System Info", "help": "Help",
+  "saveSettings": "Save Settings", "settingsSaved": "Settings saved"
+}

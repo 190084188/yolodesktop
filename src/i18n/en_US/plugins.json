@@ -1,0 +1,7 @@
+{
+  "title": "Plugin Manager", "installedPlugins": "Installed Plugins",
+  "availablePlugins": "Available Plugins", "installPlugin": "Install Plugin",
+  "removePlugin": "Remove Plugin", "pluginName": "Plugin Name",
+  "pluginVersion": "Version", "pluginFormats": "Supported Formats",
+  "noPlugins": "No Plugins"
+}
