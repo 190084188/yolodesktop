@@ -1,0 +1,13 @@
+{
+  "title": "设置", "general": "通用", "workspaceDir": "工作空间目录",
+  "pythonPath": "Python 路径", "language": "界面语言", "theme": "主题",
+  "darkMode": "深色模式", "autoStartTensorboard": "自动启动 TensorBoard",
+  "checkUpdates": "启动时检查更新",
+  "datasetSettings": "数据集设置", "datasetRootDir": "数据集根目录",
+  "datasetRootDirHelp": "扫描此目录下的子文件夹作为数据集",
+  "extraModelPaths": "额外模型搜索路径",
+  "extraModelPathsPlaceholder": "示例: D:\\models\\yolo;/home/user/custom_weights (分号分隔)",
+  "apiKeys": "API 密钥",
+  "systemInfo": "系统信息", "help": "帮助",
+  "saveSettings": "保存设置", "settingsSaved": "设置已保存"
+}

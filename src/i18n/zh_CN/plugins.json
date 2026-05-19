@@ -1,0 +1,7 @@
+{
+  "title": "插件管理", "installedPlugins": "已安装插件",
+  "availablePlugins": "可用插件", "installPlugin": "安装插件",
+  "removePlugin": "移除插件", "pluginName": "插件名称",
+  "pluginVersion": "版本", "pluginFormats": "支持格式",
+  "noPlugins": "暂无插件"
+}
