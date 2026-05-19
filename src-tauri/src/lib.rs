@@ -65,6 +65,7 @@ pub fn run() {
             commands::training::list_training_runs,
             commands::training::get_training_run,
             commands::training::list_checkpoints,
+            commands::training::scan_models,
             commands::export::export_onnx,
             commands::export::list_exported_models,
             commands::workspace::create_project,

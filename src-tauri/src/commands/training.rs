@@ -1,6 +1,7 @@
 use crate::db::{queries, DbState};
 use crate::errors::AppError;
 use crate::python::manager::PythonProcess;
+use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
 use tauri::{AppHandle, Emitter, State};
 use uuid::Uuid;
@@ -127,4 +128,50 @@ pub async fn list_checkpoints(
     run_id: String,
 ) -> Result<Vec<queries::CheckpointRow>, AppError> {
     queries::list_checkpoints(&state, &run_id)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ModelInfo {
+    pub filename: String,
+    pub path: String,
+    pub size_bytes: u64,
+    pub modified_at: f64,
+}
+
+#[tauri::command]
+pub async fn scan_models(
+    project_id: Option<String>,
+    extra_paths: Option<String>,
+) -> Result<Vec<ModelInfo>, AppError> {
+    let script = {
+        let exe_dir = std::env::current_exe()
+            .ok()
+            .and_then(|p| p.parent().map(|p| p.to_path_buf()))
+            .unwrap_or_default();
+        let dev_path = exe_dir.join("../../python/scan_models.py");
+        let prod_path = exe_dir.join("python/scan_models.py");
+        if dev_path.exists() {
+            dev_path
+        } else if prod_path.exists() {
+            prod_path
+        } else {
+            std::env::current_dir()
+                .unwrap_or_default()
+                .join("../python/scan_models.py")
+        }
+    };
+    let python = "python";
+    let project_root = project_id.unwrap_or_else(|| ".".to_string());
+    let extras = extra_paths.unwrap_or_default();
+
+    let output = std::process::Command::new(python)
+        .arg(script.to_str().unwrap())
+        .arg(&project_root)
+        .arg(&extras)
+        .output()
+        .map_err(|e| AppError::CommandFailed(format!("Model scan failed: {}", e)))?;
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    serde_json::from_str(&stdout)
+        .map_err(|e| AppError::CommandFailed(format!("Parse error: {}", e)))
 }
