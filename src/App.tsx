@@ -21,9 +21,11 @@ export default function App() {
   const [isDark, setIsDark] = useState(true);
   const { i18n } = useTranslation();
 
+const antdLocales: Record<string, typeof zhCN> = { en_US: enUS, zh_CN: zhCN };
+
   return (
     <ConfigProvider
-      locale={i18n.language === "en_US" ? enUS : zhCN}
+      locale={antdLocales[i18n.language] ?? zhCN}
       theme={{
         algorithm: isDark ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: { colorPrimary: "#1677ff" },

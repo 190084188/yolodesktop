@@ -70,19 +70,19 @@ export default function ModelViewer() {
   return (
     <div>
       <Typography.Title level={3}><ApartmentOutlined /> {t("modelGraph")}</Typography.Title>
-      <Alert message="Paste a YOLO model YAML configuration to visualize the architecture." type="info" style={{ marginBottom: 16 }} />
+      <Alert message={t("pasteYamlPrompt")} type="info" style={{ marginBottom: 16 }} />
 
       <Space direction="vertical" style={{ width: "100%" }} size="large">
-        <Card title="Model YAML Input" size="small">
+        <Card title={t("modelYamlInput")} size="small">
           <YamlEditor value={yamlInput} onChange={setYamlInput} height="300px" />
           <Button type="primary" icon={<PlayCircleOutlined />} onClick={handleParse}
             loading={parseMutation.isPending} style={{ marginTop: 12 }}>
-            Parse & Visualize
+            {t("parseAndVisualize")}
           </Button>
         </Card>
 
         {graphData && (
-          <Card title="Model Architecture" size="small">
+          <Card title={t("modelArchitecture")} size="small">
             <ModelGraph nodes={graphData.nodes as never[]} edges={graphData.edges as never[]} />
           </Card>
         )}

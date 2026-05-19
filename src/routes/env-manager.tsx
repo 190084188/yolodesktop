@@ -48,7 +48,7 @@ export default function EnvManager() {
         return <Tag color={color} icon={icon}>{s}</Tag>;
       },
     },
-    { title: "CUDA", dataIndex: "cuda_available", key: "cuda", render: (v: boolean) => v ? <Tag color="green">Available</Tag> : <Tag>CPU Only</Tag> },
+    { title: t("cuda"), dataIndex: "cuda_available", key: "cuda", render: (v: boolean) => v ? <Tag color="green">{t("available")}</Tag> : <Tag>{t("cpuOnlyShort")}</Tag> },
     { title: t("installed"), dataIndex: "installed_at", key: "installed_at", render: (v: string | null) => v ?? "—" },
     {
       title: t("common:actions"), key: "actions",
@@ -66,10 +66,10 @@ export default function EnvManager() {
       {!prereqLoading && prereqs && (
         <Card size="small" style={{ marginBottom: 16 }}>
           <Descriptions column={3} size="small">
-            <Descriptions.Item label="Python">
+            <Descriptions.Item label={t("python")}>
               {prereqs.python_found ? <Tag color="green">{prereqs.python_version}</Tag> : <Tag color="red">{t("pythonNotFound")}</Tag>}
             </Descriptions.Item>
-            <Descriptions.Item label="CUDA">
+            <Descriptions.Item label={t("cuda")}>
               {prereqs.cuda_available ? <Tag color="green">{t("cudaAvailable")}</Tag> : <Tag>{t("cudaNotAvailable")}</Tag>}
             </Descriptions.Item>
             <Descriptions.Item label={t("availableVersions")}>
@@ -88,7 +88,7 @@ export default function EnvManager() {
       )}
 
       {installing && (
-        <Card size="small" title={`${t("installing")} YOLO v${installing}`} style={{ marginBottom: 16 }}>
+        <Card size="small" title={t("installYoloV", { version: installing })} style={{ marginBottom: 16 }}>
           <div style={{ height: 200, overflow: "auto", background: "#1a1a2e", color: "#e0e0e0", fontFamily: "monospace", fontSize: 12, padding: 8, borderRadius: 4 }}>
             {logs.length === 0 && <div>{t("phaseCollecting")}</div>}
             {logs.map((l, i) => <div key={i}>{l}</div>)}

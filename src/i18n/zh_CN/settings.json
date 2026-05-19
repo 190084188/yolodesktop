@@ -9,5 +9,9 @@
   "extraModelPathsPlaceholder": "示例: D:\\models\\yolo;/home/user/custom_weights (分号分隔)",
   "apiKeys": "API 密钥",
   "systemInfo": "系统信息", "help": "帮助",
-  "saveSettings": "保存设置", "settingsSaved": "设置已保存"
+  "saveSettings": "保存设置", "settingsSaved": "设置已保存",
+  "workspaceDirHelp": "项目和数据的基础目录",
+  "pythonPathHelp": "覆盖系统 Python 自动检测",
+  "workspaceDirPlaceholder": "~/yolodesktop-workspace",
+  "pythonPathPlaceholder": "自动检测"
 }

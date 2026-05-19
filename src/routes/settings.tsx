@@ -9,11 +9,11 @@ export default function Settings() {
       <Typography.Title level={3}>{t("title")}</Typography.Title>
       <Card style={{ maxWidth: 600 }}>
         <Form layout="vertical">
-          <Form.Item label={t("workspaceDir")} help="Base directory for projects and data">
-            <Input placeholder="~/yolodesktop-workspace" />
+          <Form.Item label={t("workspaceDir")} help={t("workspaceDirHelp")}>
+            <Input placeholder={t("workspaceDirPlaceholder")} />
           </Form.Item>
-          <Form.Item label={t("pythonPath")} help="Override system Python detection">
-            <Input placeholder="Auto-detected" />
+          <Form.Item label={t("pythonPath")} help={t("pythonPathHelp")}>
+            <Input placeholder={t("pythonPathPlaceholder")} />
           </Form.Item>
           <Divider />
           <Form.Item label={t("autoStartTensorboard")}>
